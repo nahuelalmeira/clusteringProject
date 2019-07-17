@@ -107,6 +107,28 @@ def get_C_rand(edgelist, swaps=100, n_samples=100):
         return C
     return C_values
 
+def get_C_rand_CM(degSeq, samples=100):
+    C_values = np.zeros(samples)
+    for i in range(samples):
+        g = nx.configuration_model(degSeq, seed=i)
+        g = nx.Graph(g)
+        C = nx.transitivity(g)
+        C_values[i] = C
+        #return C_values.mean(), C_values.std()
+    return C_values
+
+def compute_C_values(g):
+
+    degSeq = list(dict(nx.degree(g)).values())
+    
+    C = nx.transitivity(g)
+    C_greedy = get_C_greedy(degSeq)
+    C_rand = get_C_rand_CM(degSeq).mean()
+    
+    C_norm = (C - C_rand) / (C_greedy - C_rand)
+    
+    return C, C_rand, C_greedy, C_norm
+
 def get_C_Havel_Hakimi(degSeq):
     g = nx.havel_hakimi_graph(degSeq)
     C_HH = nx.transitivity(g)
