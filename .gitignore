@@ -1,3 +1,10 @@
+# LaTex
+*.aux
+*.bbl
+*.log
+*.blg
+*.synctex.gz
+
 # VSCode
 .vscode
 
