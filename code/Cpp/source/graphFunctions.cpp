@@ -196,11 +196,11 @@ void testConsistency(const Graph& G) {
     //assert(G.edges.size() == G.M);
 
     /* Stubs list size must be twice the number of edges */
-    assert(G.stubs.size() == 2*G.M);
+    assert(int(G.stubs.size()) == 2*G.M);
 
     /* Degree sequence must be constant */
     for(int i=0; i<G.N; i++)
-        assert(G.degree[i] == G.neighbors[i].size());
+        assert(G.degree[i] == int(G.neighbors[i].size()));
     
 
     /* Graph cannnot have isolated nodes */
@@ -255,7 +255,7 @@ Graph createGraph(const string file_name, bool verbose) {
     G.N = N;
     G.M = M;
     G.adjacency.resize(N);
-    for (int i=0; i<G.adjacency.size(); i++)
+    for (int i=0; i<int(G.adjacency.size()); i++)
 		G.adjacency[i].resize(N,false);
     G.degree.resize(N, 0);
     G.neighbors.resize(N);

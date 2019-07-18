@@ -9,3 +9,9 @@ SOURCES=$(FILES:%.cpp=$(SRC_PATH)/%.cpp)
 all :
 	mkdir -p ${OUT_PATH}
 	${CC} --std=c++11 ${CFLAGS} -I${HEADER_PATH} ${SOURCES} -o annealing 
+
+FILES=relaxation.cpp basicFunctions.cpp graphFunctions.cpp ran2.cpp
+SOURCES=$(FILES:%.cpp=$(SRC_PATH)/%.cpp)
+
+all :
+	${CC} --std=c++11 ${CFLAGS} -I${HEADER_PATH} ${SOURCES} -o relaxation

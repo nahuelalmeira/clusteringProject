@@ -85,6 +85,7 @@ void parseArguments(int argc, char *argv[]) {
             INPUT_DIR = argv[i+1];
         if( !strcmp(argv[i], "--inputFile") )
             INPUT_FILE = argv[i+1];
+
         if( !strcmp(argv[i], "--decorrTime") )
             DECORR_TIME = atoi(argv[i+1]);
         if( !strcmp(argv[i], "--transitTime") )
@@ -94,7 +95,7 @@ void parseArguments(int argc, char *argv[]) {
     }
     if(INPUT_FILE == "") INPUT_FILE = NETWORK + ".txt";
     //if( !RAMPE.compare("cooling") )
-    if (fabs(INITIAL_MU) < 10E-6)
+    if (fabs(INITIAL_MU) > 10E-6)
         RAND_MCS = 0;
 
 }
@@ -125,36 +126,36 @@ void writeData(const Graph G, double mu, int sample, int steps, ostream& out) {
         << steps  << endl;
 }
 
-string protocolName(int transit, int decorr, int samples, float step, string rampe, bool cycle) {
+string protocolName(string mode, string rampe, double mu_init, double step, int samples, int transit, int decorr) {
     string protocol;
 
     string str_decorr;
     string str_transit;
     string str_samples;
     string str_step;  
+    string str_mu_init;
 
     str_transit = string(6 - to_string(transit).length(), '0') + to_string(transit);
     str_decorr  = string(6 - to_string(decorr).length(), '0')  + to_string(decorr);
     str_samples = string(6 - to_string(samples).length(), '0') + to_string(samples);
-    str_step = to_string(step);
+    str_mu_init = to_string(mu_init);
+    str_step = to_string(fabs(step));
 
-    if(cycle) rampe = "cycle";
-
-    protocol = rampe + "_" + str_step + "_" + str_samples + "_" + str_transit + "_" + str_decorr;
+    protocol = mode + "_" + rampe + "_muInit" + str_mu_init + "_step" + str_step 
+             + "_samples" + str_samples + "_transit" + str_transit + "_decorr" + str_decorr;
 
     return protocol;
 }
 
-string buildOutputDir() {
+string buildOutputDir(string mode, string rampe, double mu_init, double step, int samples, int transit, int decorr) {
     string output_dir;
-    string protocol = protocolName(TRANSIT_TIME, DECORR_TIME, N_SAMPLES, DELTA_MU, RAMPE, CYCLE);
+    string protocol = protocolName(mode, rampe, mu_init, step, samples, transit, decorr);
 
     output_dir = INPUT_DIR + "/" + NETWORK;
     if(CONNECTED) output_dir += "/connected";
     output_dir += "/" + protocol + "/seed" + string(5 - str_seed.length(), '0') + str_seed; 
     return output_dir;
 }
-
 
 int main(int argc, char *argv[]) {
 
@@ -182,7 +183,7 @@ int main(int argc, char *argv[]) {
     Cws = G.Cws;
 
     /* Randomize network by double swapping edges */
-    cout << "Randomizing network with mu = 0." << endl;
+    if (RAND_MCS) cout << "Randomizing network with mu = 0." << endl;
     while(valid_swaps < RAND_MCS*G.M) {
         
         // Perform a valid MCS
@@ -214,7 +215,7 @@ int main(int argc, char *argv[]) {
     string str_sample;
     string str_steps;
 
-    string output_dir = buildOutputDir();
+    string output_dir = buildOutputDir(MODE, RAMPE, INITIAL_MU, DELTA_MU, N_SAMPLES, TRANSIT_TIME, DECORR_TIME);
     createDir(output_dir);
 
     while(true) {
@@ -270,6 +271,8 @@ int main(int argc, char *argv[]) {
                 CYCLE = false;
                 if      (RAMPE == "annealing") RAMPE = "cooling";
                 else if (RAMPE == "cooling")   RAMPE = "annealing";
+                output_dir = buildOutputDir(MODE, RAMPE, INITIAL_MU, DELTA_MU, N_SAMPLES, TRANSIT_TIME, DECORR_TIME);
+                createDir(output_dir);
             }
         }
     }
