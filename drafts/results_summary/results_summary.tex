@@ -3,7 +3,8 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb} % \gtrsim is defined here
-
+%\usepackage[colorlinks=true, allcolors=blue]{hyperref} % for \url
+\usepackage{hyperref}
 \begin{document}
 \part{Normalized clustering coefficients}
 
@@ -94,7 +95,7 @@ This is a known algorithm that is very useful because it allows to determine whe
 
 The advantage of this algorithm is that it always converges when the original sequence is graphic and that the resulting graph es quite clusterized. The disadvantage is that in general it doesn't give the most clusterized graph. For example, given the degree sequence $S_1 = [3, 3, 2, 2, 2, 1, 1]$, the result of the algorithm is the graph in left side of figure \ref{fig:graph_3322211}, whilst the most clustered graph for that degree sequence is the graph in the right part of the figure.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.8]{./figs/graph_3322211.png}
 \caption{Graphs obtained from the degree sequence $S_1 = [3, 3, 2, 2, 2, 1, 1]$}
@@ -109,13 +110,15 @@ The main disadvantage of this algorithm is that it doesn't always converge. One 
 
 In most cases, this algorithm seems to converge to graphs very close to the most clustered graph. But if we see the example $S_2$, we can show that the result of the algorithm is the graph in the right side of figure.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.8]{./figs/graph_332222.png}
 \caption{Graphs obtained from the degree sequence $S_1 = [3, 3, 2, 2, 2, 2]$}
 \label{fig:graph_332222}
 \end{figure}
 
+
+\section{Results}
 
 \appendix
 \section{Problems with $C_{\mathrm{unc}}$} \label{app:Cunc}
@@ -161,6 +164,348 @@ Then, equation \ref{eq:Cunc} gives
 
 Thus, if the hub scales with $N$ with any positive exponent, the expected clustering coefficient diverges.
 
+%\appendix
+\section{Analytic Results}
+
+In this Appendix we will discuss the problem of finding the maximum value of the clustering coefficient for a given degree sequence.
+
+In \cite{Rivin2002}, Rivin obtains sharp bounds for the number of $n$-cycles in a simple, undirected graph as a function of the number of edges. In particular, the bound for the number $T$ of triangles of a network with $N$ nodes and $M$ edges is found. Using Lagrange multipliers to maximize 
+
+\begin{equation}
+    \sum_i \lambda_i^3
+\end{equation}
+
+under the constraints
+
+\begin{equation}
+    \sum_i \lambda_i = 0\qquad \text{and} \qquad \sum_i \lambda_i^2,
+\end{equation}
+
+he obtains that the number of triangles is bounded by
+
+\begin{equation} \label{eq:RivinBound}
+    T \leq \dfrac{N-2}{\sqrt{N (N-1)}} \dfrac{2^{1/2}}{3} M^{3/2}.
+\end{equation}
+
+Also, taking the complete graph as an example, he proves that the bound is sharp.
+
+Now, inequality \ref{eq:RivinBound} could be improved by imposing the condition that the network has a specified degree sequence.
+
+Let G be a simple undirected graph with $N$ nodes and $M$ links and let $A$ be its adjacency matrix. The elements $a_{ij}=(A)_{ij}$ then satisfy
+
+\begin{align}
+    a_{ij} &= a_{ji}, \\
+    a_{ii} &= 0, \\
+    \sum_{j} a_{ij} &= k_i, \\
+    \sum_{i, j} a_{ij} &= 2M,
+\end{align}
+
+where $k_i$ is the degree of the node $i$.
+\\
+
+%where $\lbrace k_1, k_2, \dots, k_N\rbrace$. L
+The Newman's clustering coefficient is given by
+
+\begin{equation}
+    C = \dfrac{6 \times N_T}{|P_2|} 
+\end{equation}
+
+where $N_T$ is the number of triangles in the network and $|P_2|$ the number of path of length 2.
+
+To compute the number of path of length two, lets start by noting that, for a given node $i$, the number of path of length 2 that start in $i$ are
+
+\begin{equation}
+    |P_2|(i) = \sum_{l} (A^2)_{il} - (A^2)_{ii}=  \sum_{lj} a_{il} a_{lj} - k_i = \sum_{l} a_{il} k_l - k_i.
+\end{equation}
+
+Then, the total number of paths of length two is simple 
+
+\begin{equation} \label{eq:P2}
+    %|P_2| = \sum_i |P_2|(i) = \sum_i \sum_{l\neq j} a_{il} a_{lj} = \sum_{ilj} a_{il} a_{lj} - k_i = \sum_l k_i^2 - 2M
+    |P_2| = \sum_i |P_2|(i) = \sum_i \left( \sum_{l} a_{il} k_l - k_i \right) = \sum_l k_l^2 - 2M.
+\end{equation}
+
+On the other side, the number of triangles in the graph is given by
+
+\begin{equation} \label{eq:T}
+    %N_T = \dfrac{1}{6} Tr(A^3) = \dfrac{1}{6} \sum_{i} c_{ii} = \dfrac{1}{6} \sum_{ijl} a_{ij} a_{jl} a_{li}
+    N_T = \dfrac{1}{6} Tr(A^3) = \dfrac{1}{6} \sum_{ijl} a_{ij} a_{jl} a_{li}.
+\end{equation}
+
+Thus, the Newman's clustering coefficient is given by
+
+\begin{equation} \label{eq:newman}
+    C = \dfrac{Tr(A^3)}{|P_2|} = \dfrac{Tr(A^3)}{\sum_l k_l^2 - 2M},
+\end{equation}
+
+If we consider the ensamble of graphs having a given degree sequence $\lbrace k_1, k_2, \dots, k_N\rbrace$, the clustering coefficient depends only on the numerator of equation \ref{eq:newman}, as the denominator is determined by the degree sequence.
+
+The Watts-Strogatz clustering coefficient is defined by
+
+\begin{equation} \label{eq:ws}
+    C_{\mathrm{WS}} = \dfrac{1}{N} \sum_{i} c(i),
+\end{equation}
+
+where $c(i)$ is the local clustering of node $i$, defined as
+
+\begin{equation}
+    c(i) = 
+    \left\{
+    	\begin{array}{ll}
+    		\dfrac{2 N_{T}(i)}{k_i (k_i-1)}  & \mbox{if } k_i > 1 \\
+    		0 & \mbox{if } k_i \leq 1
+    	\end{array}
+    \right.
+\end{equation}
+
+% \begin{equation}
+%     c(i) = \dfrac{2 N_{T}(i)}{k_i (k_i-1)},
+% \end{equation}
+
+$N_T(i)$ being the number of triangles that have $i$ as one of its vertices, which can be computed as
+
+\begin{equation}
+    N_T(i) = \sum_{jl} a_{ij} a_{jl} a_{li} = (A^3)_{ii}.
+\end{equation}
+
+Thus, equation \ref{eq:ws} can be written as
+
+\begin{equation} \label{eq:Cws}
+    C_{\mathrm{WS}} = \dfrac{1}{N} \sum\limits_{i:k_i>1}  \dfrac{2 N_{T}(i)}{k_i (k_i-1)} =  \dfrac{1}{N} \sum\limits_{i:k_i>1} \dfrac{2 (A^3)_{ii}}{k_i (k_i-1)} 
+\end{equation}
+
+
+\subsection{Lagrange multipliers}
+
+In order to get $C_{\mathrm{max}}$, we need to maximize the number of triangles in the network (the number of triads is fixed by the degree sequence, see Eq. \ref{eq:P2}). According to Eq. \ref{eq:T}, the number of triangles is determined by the trace of the adjacency matrix A. Considering the degree sequence as constrains, together with the conditions imposed in considering the graph as simple and undirected, the function we have to maximize is
+
+\begin{equation}
+    f(\lbrace a_{ij} \rbrace) = Tr(A^3) + \sum_i \theta_i \left(d_i - \sum_j a_{ij} \right) - \sum_i \omega_i a_{ii} + \sum_{i\neq j} \beta_{ij} (a_{ij}-a_{ji}) + \gamma \left(2M - \sum_{ij} a_{ij} \right).
+\end{equation}
+
+Differentiating with respect to $a_{ij}$ and equaling to 0,
+
+\begin{equation}
+    \dfrac{\partial f(\lbrace a_{pq} \rbrace)}{\partial a_{pq}} = 3 (A^2)_{pq} - \theta_p - \omega_p \delta_{pq} + (\beta_{pq} - \beta_{qp}) (1-\delta_{pq}) - \gamma = 0,
+\end{equation}
+
+where $\delta_{pq}$ is the Kronecker delta. For $p=q$, we obtain
+
+\begin{align}
+    3 (A^2)_{pp} &= \theta_p + \omega_p + \gamma \\
+    3 d_p &=  \theta_p + \omega_p + \gamma.
+\end{align}
+
+Summing over $p$,
+
+\begin{equation} \label{eq:diagonal}
+    6 M = \Theta + \Omega + N \gamma,
+\end{equation}
+
+where we defined $\Theta = \sum_p \theta_p$ and $\Omega = \sum_p \omega_p$.
+\\
+
+On the other side, for $p\neq q$, we have
+
+\begin{equation} \label{eq:p_neq_q}
+    3 (A^2)_{pq} = \theta_p + (\beta_{qp} - \beta_{pq}) + \gamma.
+\end{equation}
+
+Analogously, differentiating with respect to $a_{qp}$, $q \neq p$, we have
+
+\begin{equation}\label{eq:q_neq_p}
+    3 (A^2)_{qp} = \theta_q - (\beta_{qp} - \beta_{pq}) + \gamma.
+\end{equation}
+
+Taking into account that $A^2$ is symmetric and adding Eq. \ref{eq:q_neq_p} to Eq. \ref{eq:p_neq_q}, 
+
+\begin{equation} \label{eq:A2pnotq}
+    6 (A^2)_{pq} = \theta_p + \theta_q + 2 \gamma.
+\end{equation} 
+
+
+
+Summing \ref{eq:A2pnotq} over $p\neq q$,
+
+\begin{align}
+    \sum_{p\neq q}6 (A^2)_{pq} &=\sum_{p\neq q} (\theta_p + \theta_q) +2 N(N-1) \gamma \nonumber \\
+    6 |P_2| &= 2(N-1) \Theta + 2N(N-1) \gamma \nonumber \\
+    \dfrac{3 |P_2|}{N-1} &= \Theta + N \gamma. \label{eq:sum_mu}
+\end{align}
+
+Summing \ref{eq:A2pnotq} over $q:q\neq p$,
+
+\begin{align}
+    \sum_{q:q\neq p} (A^2)_{pq} &= (N-1) \theta_p + \sum_{q:q\neq p} \theta_q + 2(N-1)\gamma \nonumber\\ 
+    |P_2(p)| &= (N-1) \theta_p + \Theta - \theta_p + 2(N-1)\gamma \nonumber\\ 
+    |P_2(p)| &= (N-2) \theta_p + \Theta + 2(N-1)\gamma \nonumber \\
+    |P_2(p)| &= (N-2) \theta_p + (N-2)\gamma + \dfrac{3 |P_2|}{N-1} \nonumber \\
+    |P_2(p)| &= (N-2) (\theta_p + \gamma) + \dfrac{3 |P_2|}{N-1}
+\end{align}
+
+From \ref{eq:diagonal} and \ref{eq:sum_mu}, we have 
+
+\begin{equation}
+    \Omega = 6M - \dfrac{3 |P_2|}{N-1}.
+\end{equation}
+
+
+
+Summing over $p\neq q$,
+
+%Then, the parameters $\mu_p$ satisfy
+
+%\begin{equation}\label{eq:sum_mu}
+%    \sum_p \mu_p = \dfrac{3 |P_2|}{N-1}
+%\end{equation}
+
+Now, subtracting Eq. \ref{eq:q_neq_p} to Eq. \ref{eq:p_neq_q}, we have
+
+\begin{equation}\label{eq:betas}
+     2 (\beta_{qp} - \beta_{pq}) = \theta_q - \theta_p.
+\end{equation}
+
+Defining $\beta_{pp} = 0,\;\forall p$ and summing over $p$,
+
+\begin{equation}
+    2 \sum_p (\beta_{qp}-\beta_{pq}) = N\theta_q - \Theta.
+\end{equation}
+
+Then,
+
+
+Summing over $p \neq q$,
+
+\begin{equation}
+    2 \sum_{p\neq q} (\beta_{qp} - \beta_{pq}) = \sum_{p\neq q} (\theta_q - \theta_p) = 0.
+\end{equation}
+
+Based on the previous results, we have that
+
+\begin{align}
+    6 Tr(A^3) &= 6 \sum_{ij} a_{ij} (A^2)_{ij} \nonumber \\
+    6 Tr(A^3) &= \sum_{ij} a_{ij}(\theta_i + \theta_j + 2\gamma) \nonumber \\
+    6 Tr(A^3) &= 2\sum_{ij} a_{ij}(\theta_i + \gamma) \nonumber \\
+    3 Tr(A^3) &=  \sum_{i j} a_{ij}\theta_i + 2M\gamma \nonumber \\
+    3 Tr(A^3) &=  \sum_{i} d_i\theta_i + 2M\gamma \nonumber \\
+    %3 Tr(A^3) &= \sum_{i} d_i(3d_i-\omega_i-\gamma) + 2M\gamma \nonumber \\ 
+    %3 Tr(A^3) &= 3\sum_{i} d_i^2-\sum_{i}d_i\omega_i-\gamma\sum_{i}d_i + 2M\gamma \nonumber \\ 
+    %3 Tr(A^3) &= 3N\langle k^2\rangle-\sum_{i}d_i\omega_i
+    %
+    3 Tr(A^3) &= \sum_{i} d_i\theta_i + 2 M \left[\dfrac{3 |P_2|}{N(N-1)} - \dfrac{1}{N} \Theta\right] \nonumber \\
+    3 Tr(A^3) &= \dfrac{2 M}{N} \dfrac{3 |P_2|}{N-1} + \sum_{i} \left(d_i\theta_i  - \dfrac{2M}{N}  \theta_i\right) \nonumber \\
+    3 Tr(A^3) &= \langle k \rangle \dfrac{3 |P_2|}{N-1} + \sum_{i} \left(d_i -\langle k \rangle\right) \theta_i
+\end{align}
+
+
+
+Now let's do the same but trying to maximize $\bar{c}$. The function with the constrains is 
+
+\begin{equation}
+    g(\lbrace a_{ij} \rbrace) = \sum_{i} \dfrac{2 (A^2)_{ii}}{d_i (d_i-1)} + \sum_i \mu_i \left(d_i - \sum_j a_{ij} \right) + \sum_i \omega_i a_{ii} + \sum_{i\neq j} \beta_{ij} (a_{ij}-a_{ji}) + \gamma \left(2M - \sum_{ij} a_{ij} \right).
+\end{equation}
+
+Differentiating with respect to $a_{pq}$,
+
+\begin{equation}
+    \dfrac{\partial g(\lbrace a_{pq} \rbrace)}{\partial a_{pq}} = \dfrac{2 a_{qp} }{d_p (d_p - 1)} + \dfrac{2 a_{pq}}{d_q (d_q - 1)} - \mu_p + \omega_p \delta_{pq} + (\beta_{pq} - \beta_{qp}) (1-\delta_{pq}) - \gamma = 0.
+\end{equation}
+
+For $p=q$,
+
+\begin{equation}
+    \omega_p = \mu_p.
+\end{equation}
+
+For $p\neq q$,
+
+\begin{equation}
+    2 a_{pq}\left[\dfrac{1}{d_p (d_p - 1)} + \dfrac{1}{d_q (d_q - 1)} \right]- \mu_p + (\beta_{pq} - \beta_{qp}) - \gamma = 0.
+\end{equation}
+
+Differentiating with respect to $a_{qp},\: q\neq p$,
+
+\begin{equation}
+    2 a_{pq}\left[\dfrac{1}{d_p (d_p - 1)} + \dfrac{1}{d_q (d_q - 1)} \right]- \mu_q - (\beta_{pq} - \beta_{qp}) - \gamma = 0.
+\end{equation}
+
+Substracting:
+
+\begin{align}
+    \mu_q - \mu_p + 2 (\beta_{pq} - \beta_{qp}) &= 0 \nonumber \\
+    \sum_{p\neq q}(\beta_{pq} - \beta_{qp}) &= 0.
+\end{align}
+
+\section{Networks studied} \label{app:NetworksStudied}
+
+\textbf{Facebook-combined:} Facebook user-user friendship network. Nodes represent users and links represent friendship. Data correspond to 10 egocentric networks combined. First used in \cite{Leskovec2012LearningNetworks}. Available at \url{http://snap.stanford.edu/data/egonets-Facebook.html}.\\
+
+\textbf{Twitter:} This dataset consists of 'circles' (or 'lists') from Twitter. Twitter data was crawled from public sources. The dataset includes node features (profiles), circles, and ego networks.  First used in \cite{Leskovec2012LearningNetworks}. Available at \url{http://snap.stanford.edu/data/egonets-Twitter.html}.\\
+
+\textbf{Google+:} This dataset consists of 'circles' from Google+. Google+ data was collected from users who had manually shared their circles using the 'share circle' feature. The dataset includes node features (profiles), circles, and ego networks. First used in \cite{Leskovec2012LearningNetworks}. Available at \url{http://snap.stanford.edu/data/egonets-Gplus.html}.
+%\cite{mcAuley2012}
+\\
+
+\textbf{Euro Road:} Nodes represent European cities and edges represent roads. Available at \url{http://konect.uni-koblenz.de/networks/subelj_euroroad}.
+\\
+
+\textbf{Power grid:} This is the network is the high-voltage power grid in the Western States of the United States of America. The nodes are transformers, substations, and generators, and the ties are high-voltage transmission lines. Although the transmission lines can be directed and differentiated based on their capacity, this information is not available. First used in \cite{Watts1998}. Available at \url{https://toreopsahl.com/datasets}.
+\\
+
+\textbf{Internet:} Contains a symmetrized snapshot of the structure
+of the Internet at the level of autonomous systems, reconstructed from BGP
+tables posted at archive.routeviews.org (University of Oregon).  This snapshot was created by Mark
+Newman from data for July 22, 2006.
+\\
+
+\textbf{Internet-Oregon:} Internet as autonomous systems as for My 26 2001. Data collected by University of Oregon using route-views. Data first used in \cite{Leskovec2005GraphsExplanations}. Available at \url{http://snap.stanford.edu/data/Oregon-1.html} \\
+
+%\textbf{Yeast:} The S. cerevisiae protein–protein interaction network has proteins as nodes, connected by identified direct physical interactions, and is derived from combined, non-overlapping data. Data first used in \cite{Jeong2001}.
+%\cite{jeong2001}
+%\\
+
+\textbf{Email-Tarragona:} List of edges of the network of e-mail interchanges between members of the Univeristy Rovira i Virgili (Tarragona). Data compiled by members of our group. First used in \cite{Guimera2003Self-similarInteractions}. Available at \url{http://deim.urv.cat/~alexandre.arenas/data/welcome.htm}.
+\\
+
+\textbf{Email-Enron:} The Enron email network consists of 1,148,072 emails sent between employees of Enron between 1999 and 2003. Nodes in the network are individual employees and edges are individual emails. It is possible to send an email to oneself, and thus this network contains loops. First used in \cite{leskovec2009}. Available at \url{http://snap.stanford.edu/data/email-Enron.html}. See also \cite{konect:2017:enron,konect:klimt04}.
+\\
+
+\textbf{Open Flights:} A tie exists between two airports if a flight was scheduled between them in 2002. The weights corresponds to the number of seats available on the scheduled flights. Even thought this type of networks is directed by nature as a flight is scheduled from one airport and to another, the networks are highly symmetric (Barrat et al., 2004). Therefore, the version of this network is undirected (i.e., the weight of the tie from one airport towards another is equal to the weight of the reciprocal tie). This network was obtained from the Complex Networks Collaboratory’s website. Data first used in \cite{Colizza2007Reaction-diffusionNetworks}. Available at \url{https://toreopsahl.com/datasets/#usairports}.
+\\
+
+\textbf{US-airports-500:} This is the directed network of flights between the 500 mos busiest commercial airports in the US in 2010. Each edge represents a connection from one airport to another, and the weight of an edge shows the number of flights on that connection in the given direction, in 2010.
+\\
+
+\textbf{PGP:} List of edges of the giant component of the network of users of the Pretty-Good-Privacy algorithm for secure information interchange. Data compiled by members of our group. First used in \cite{Boguna2004ModelsAttachment}. Available at \url{http://deim.urv.cat/~alexandre.arenas/data/welcome.htm}.
+\\
+
+
+\textbf{bio-celegans:} metabolic network of the roundworm \emph{Caenorhabditis elegans} nodes are metabolites (e.g., proteins) and edges are interactions between them. First used in \cite{Jeong2000TheNetworks}. Available in \url{http://networkrepository.com/bio-celegans.php}. Obs: in  \cite{Jeong2000TheNetworks}, the authors study many more networks, but I couldn't find the data.
+\\
+
+\textbf{bio-diseasome:} 
+\\
+
+%\textbf{Arxiv:} Co-authorship network of preprints posted to the condensed matter section of arXiv E-Print Archive between 1995 and 1999. First used in \cite{Newman2001}. Available at \url{http://www-personal.umich.edu/~mejn/netdata/} and \url{https://toreopsahl.com/datasets/#newman2001}
+\textbf{Coautorship networks:} Nodes are authors and links are present when two authors published together. (ca-netscience) (ca-HepTh) (ca-HepPh) (ca-GrQc) (ca-CondMat) (ca-AstroPh)
+\\
+
+\textbf{Air traffic:} Air traffic control network. This network was constructed from the FAA (Federal Aviation Administration) National Flight Data Center (NFDC), Preferred Routes Database. Nodes in this network represent airports or service centers and links are created from strings of preferred routes recommended by NFDC; downloaded from: \url{www.fly.faa.gov}. Available at \url{http://research.mssm.edu/maayan/datasets/qualitative_networks.shtml}
+\\
+
+\textbf{Terrorist:} 9/11 terrorist communication network. Nodes represent people involved in the 9/11 attack and edges represent known conections between them. First used in \cite{Krebs2002MappingCells}. See also \cite{Tian2017ArticulationNetworks}.
+\\
+
+\textbf{Jazz:} Collaboration network among jazz musicians. Nodes represent musicians and links are present between pairs of musicians that play in the same band. First used in \cite{Gleiser2003CommunityJazz}.
+\\
+
+%\textbf{Food Web:} [TODO: Complete]
+%\\
+
+\textbf{Protein interaction networks:} Networks of experimentally determined interactions between proteins \cite{Xenarios2000DIP:Proteins, Xenarios2002DIPInteractions}. We used data from the following species: \emph{C. Elegans}, \emph{E. Coli}, \emph{S. Cerevisiae} \cite{Colizza2006DetectingNetworks}, \emph{M. Musculus}, \emph{H. Pylori} and \emph{H. Sapiens} \cite{Goh2006SkeletonNetworks}. Available at \cite{DIP}.
+\\
+
+\textbf{Chess:} Networks of chess players. Nodes represent players and conections are established between nodes if the players played at least once. Three different networks were built, using games played on physical boards (chess-OTB), internet portals (chess-Portal) and by correspondence (chess-Corr). The data was provided by \url{www.openingmaster.com}. Reference: \cite{Almeira2017StructurePlayers}
 
 \bibliographystyle{ieeetr}
 \bibliography{more_references}
