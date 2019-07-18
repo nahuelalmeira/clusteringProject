@@ -4,15 +4,8 @@ Parameters:
 
 --randMCS: number of Monte Carlo steps to randomize the network
 --connected: if present, rewirings will take place only if they don't disconnect the network
---mode: maxC, maxCws
 --seed: random seed
---initialMu:
---finalMu:
---deltaMu:
---cycle: change deltaMu by -deltaMu and continue until mu == initialMu
---samples: number of samples for each mu
---decorrTime: time between samples
---transitTime: time before first sample for each mu
+--samples: number of samples 
 --inputDir: input directory
 --inputFile: input file, relative to inputDir
 */
