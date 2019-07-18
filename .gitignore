@@ -4,6 +4,7 @@
 *.log
 *.blg
 *.synctex.gz
+*.dvi
 
 # VSCode
 .vscode

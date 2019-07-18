@@ -2,6 +2,7 @@
 
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{amssymb} % \gtrsim is defined here
 
 \begin{document}
 \part{Normalized clustering coefficients}
@@ -58,7 +59,7 @@ where $T = \sum_i T_i$ is the number of triangles in the network.
 
 The two global clustering coefficients have similar definitions and, in fact, for some networks both have similar values. In particular, for an uncorrelated network, $\bar{C}$, $\bar{c}(k)$ and $C$ are identical and its value can be computed as \cite{NewmanBook} 
 
-\begin{equation} \label{eq:Cnorm}
+\begin{equation} \label{eq:Cunc}
 C_{\mathrm{unc}} = \dfrac{1}{N} \dfrac{\left[ \langle k^2 \rangle - \langle k \rangle  \right]^2}{\langle k \rangle^3}.
 \end{equation}
 
@@ -68,12 +69,18 @@ Nevertheless, these coefficients do differ significantly in some cases, as can b
 
 We define the normalized clustering coefficients
 
-\begin{equation}
+\begin{equation} \label{eq:Cnorm}
 C_{\mathrm{norm}} = \dfrac{C - C_{\mathrm{rand}}}{C_{\mathrm{max}} - C_{\mathrm{rand}}}\qquad \text{and} \qquad
 \bar{c}_{\mathrm{norm}} = \dfrac{\bar{c} - \bar{c}_{\mathrm{rand}}}{\bar{c}_{\mathrm{max}} - \bar{c}_{\mathrm{rand}}}
 \end{equation}
 
 $C_{\mathrm{rand}}$ and $\bar{c}_{\mathrm{rand}}$ represent the average of the clustering coefficient computed for an ensemble of random networks with the same degree sequence as the original network, and $C_{\mathrm{max}}$ and $\bar{c}_{\mathrm{max}}$ correspond to the maximum clustering values that can be achieved over the networks in the ensemble. In our work, we will consider the ensamble of all networks having the same degree sequence as the original network.
+
+There are differen posibilities in which $C_{\mathrm{rand}}$ can be defined. One way is using the expected value for an uncorrelated network, given by Equation \ref{eq:Cunc}, which can be easily computing from the degree sequence. Unfortunately, this measure has some problems for heterogeneous graphs (for which the hypothesis of no degree-degree correlations is not satisfied), as is exemplified in Appendix \ref{app:Cunc}. The alternative is to create instances of randomized versions of the network and define $C_{\mathrm{rand}}$ as the average of the clustering coefficient for a set of such instances. In this line, we used two different randomization procedures. The first one is the Configuration Model \cite{Molloy1995ASequence}, and the second method consists in randomizing the original network by degree-preserving edge rewiring. %The two randomization approaches are similar, but not exactly the same. One of the main differences is that when the network is dense ($\langle k \rangle \gtrsim 10$)
+
+The Configuration Model is an algorithm that allows to build a network with a given degree sequence from scratch. It works as follows. We start with an empty graph with $N$ nodes (being $N$ the size of the desired network). We then attach to each node a number of ``half-edges'' or stubs equal to the node's degree. Then, with uniform probability we pick a pair of stubs and join them, forming an edge. We repeat this step until there is no more free stubs. The algorithm does not impose any restriction on the graph connectivity, and can even create double-edges and self-loops. If one is interested in generating simple graphs, there are two options. The first is to repeatedly apply the algorithm until the resulting graph is simple. It has been proved [TODO: add reference] that by doing that, the sampling is uniform among all the simple graph with the given degree sequence. The downside of this alternative is that it can be computationally prohibitive, in particular for networks with diverging $\langle k^2 \rangle$, where the probability sampling a simple graph is very low \cite{NewmanBook}. The second alternative is to remove all the self-loops and double-edges from the sampled graph. The expected number of such edges is $\frac{1}{2} \left[ (\langle k^2 \rangle - \langle k \rangle ) / \langle k \rangle \right]^2$ \cite{NewmanBook}, so it vanishes for $N\rightarrow \infty$ as long as $\langle k^2 \rangle$ remains bounded. This means that this second alternative is practical for networks that are not too heterogeneous. In this work, we chose this second alternative, for which we created 100 random graphs and then took the average of the corresponding clustering coefficients.
+
+The method of degree-preserving edge rewiring (also known as edge swapping or markov chain approach) has been widely used in the literature \cite{Orsini2015QuantifyingNetworks} [TODO: add more references]. It consists on randomly selecting a pair of non-adjacent edges and, if no double edge is created in the process, swapping them. This procedure preserves the degree sequence, but destroys degree correlations. It has been shown that a number $\gtrsim M$ of swaps is enough to decorrelate the network. Here, we performed 10 independent realizations with a total of $n = 100 M$ swaps for networks small networks ($M < 100000$) and  $n = 10 M$ swaps for big networks ($M < 100000$) [TODO: add references related to mixing time and ergodicity for edge swapping]. 
 
 \subsection{Maximum clustering coefficient}
 
@@ -100,7 +107,7 @@ This algorithm is similar as the Havel-Hakimi algorithm, with the difference tha
 
 The main disadvantage of this algorithm is that it doesn't always converge. One counterexample is the degree sequence $S_2 = [3, 3, 2, 2, 2, 2]$. After adding the edges $\lbrace v_1, v_2 \rbrace, \lbrace v_1, v_3 \rbrace, \lbrace v_1, v_4 \rbrace, \lbrace v_2, v_3 \rbrace, \lbrace v_2, v_4 \rbrace, \lbrace v_5, v_6 \rbrace$, the algorithm is stuck, as there is no possible pair of nodes where to put the last edge. To overcome this flaw, we  perform the following modification. Whenever the algorithm get stuck, lets say after adding the edge $\lbrace v_i, v_j \rbrace$, we remove this edge and try to connect node $v_i$ with $v_{j+1}$. If the algorithm stuck after adding the edge $\lbrace v_i, v_N \rbrace$, we try with $\lbrace v_{i+1}, v_j \rbrace$. This way, the algorithm always converges. 
 
-In most cases, this algorithm seems to converge to graphs very close to the most clustered graph. But if we see the example $S_2$, we can show that the result of the algorithm is the graph in the right side of figure
+In most cases, this algorithm seems to converge to graphs very close to the most clustered graph. But if we see the example $S_2$, we can show that the result of the algorithm is the graph in the right side of figure.
 
 \begin{figure}[h!]
 \centering
@@ -109,6 +116,50 @@ In most cases, this algorithm seems to converge to graphs very close to the most
 \label{fig:graph_332222}
 \end{figure}
 
+
+\appendix
+\section{Problems with $C_{\mathrm{unc}}$} \label{app:Cunc}
+
+Equation \ref{eq:Cunc} is valid under the condition that no degree-degree correlation exist. In graphs with an heterogeneous degree distribution, such correlations are unavoidable, and this expresion could give incorrect values. Lets consider a few examples. 
+
+Suppose we have a star graph with $N+1$ nodes. This graph has one single node with degree $N$ and $N$ nodes with degree $1$. the first and second momenta of the degree distribution are 
+
+\begin{align}
+    \langle k \rangle &= \dfrac{1}{N+1} \sum_{i=0}^N k_i = \dfrac{1\times N + N \times 1}{N+1} = \dfrac{2N}{N+1} \nonumber \\
+    \langle k^2 \rangle &= \dfrac{1}{N+1} \sum_{i=0}^N k_i^2 = \dfrac{1\times N^2 + N \times 1^2}{N+1} = \dfrac{N^2 + N}{N+1} = N
+\end{align}
+
+If we apply equation \ref{eq:Cunc} to this particular case, we obtain
+
+\begin{equation}
+    C_{\mathrm{unc}} = \dfrac{1}{N+1}\dfrac{\left(N^2-\dfrac{2N}{N+1} \right)^2}{\left(\dfrac{2N}{N+1} \right)^3}= \dfrac{\left[N^2(N+1)-2N\right]^2}{(2N)^3} = \dfrac{(N^3+N^2-2N)^2}{8N^3},
+\end{equation}
+
+which is an increasing function of $N$ and is greater than 1 for $N \geq 3$.
+\\
+
+Now suppose we have a sparse network (with mean degree independent of $N$) and with degree distribution with second momentum scaling as $\langle k^2 \rangle \sim N^{\alpha}$, with $\alpha > 0$. In this case, equation \ref{eq:Cunc} gives
+
+\begin{equation}
+    C_{\mathrm{unc}} \sim N^{2\alpha},
+\end{equation}
+
+which is unbounded for $\alpha > 0$. That means that the expression for the expected clustering coefficient in uncorrelated networks is not valid for networks that are too heterogeneous. 
+
+Now, lets consider the case in which we have a very connected hub with degree $k_{\mathrm{max}} \sim N^{\alpha}$. Suppose also that the degree of the rest of the nodes doesn't scale with $N$. In this case, we have, for $N\gg 1$, 
+
+\begin{align}
+    \langle k \rangle &\sim N^{\alpha - 1} \nonumber \\
+    \langle k^2 \rangle &\sim N^{2\alpha-1} \nonumber 
+\end{align}
+
+Then, equation \ref{eq:Cunc} gives 
+
+\begin{equation}
+    C_{\mathrm{unc}} \sim \dfrac{1}{N} \dfrac{(N^{2\alpha-1} - N^{\alpha - 1})^2}{N^{3(\alpha - 1})} \sim \dfrac{N^{4\alpha-2}}{N^{3\alpha-2}} \sim N^{\alpha}.
+\end{equation}
+
+Thus, if the hub scales with $N$ with any positive exponent, the expected clustering coefficient diverges.
 
 
 \bibliographystyle{ieeetr}
