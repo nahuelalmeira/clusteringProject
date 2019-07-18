@@ -134,3 +134,14 @@ def get_C_Havel_Hakimi(degSeq):
     C_HH = nx.transitivity(g)
     return C_HH
 
+def compute_C_values(g):
+
+    degSeq = list(dict(nx.degree(g)).values())
+    
+    C = nx.transitivity(g)
+    C_greedy = get_C_greedy(degSeq)
+    C_rand = get_C_rand_CM(degSeq).mean()
+    
+    C_norm = (C - C_rand) / (C_greedy - C_rand)
+    
+    return C, C_rand, C_greedy, C_norm
