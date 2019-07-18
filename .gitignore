@@ -1,5 +1,8 @@
+# VSCode
+.vscode
+
 # Networks subdirectories
-./networks/real/*
+./networks/real/*/*
 ./networks/model/*
 
 # Byte-compiled / optimized / DLL files
