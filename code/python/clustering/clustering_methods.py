@@ -2,7 +2,7 @@ import numpy as np
 import igraph as ig
 import networkx as nx
 
-def clusteredGraph(degSeq):
+def clusteredGraph(degSeq, maxIt=100, verbose=False):
    
     if not ig.is_graphical_degree_sequence(degSeq):
         print('Not a graphical degree sequence')
@@ -19,7 +19,7 @@ def clusteredGraph(degSeq):
     s = 0
     t = 1
     it = 1
-    #print('Iteration', it)
+
     while True:
         
         edge = (s, t)
@@ -41,15 +41,16 @@ def clusteredGraph(degSeq):
         if s == N-2 and t == N-1:            
             if 2*len(edgelist) == sum(degSeq):
                 break
-            it += 1
-            #print('Iteration', it)
-            
+
             last_edge = edgelist.pop()
             forbidden.append(last_edge)
             s, t = edgelist[-1]
             for node in last_edge:
                 currentDegSeq[node] -= 1
-                
+            it += 1
+            #if verbose:
+            #    print('Greedy, it', it)
+               
         else:
             
             if t < N-1:
@@ -58,16 +59,38 @@ def clusteredGraph(degSeq):
                 if s < N-2:
                     s += 1
                     t = s + 1
-    
+        
+
+        if it == maxIt:
+            print('Max iterations reached:')
+            print('    Expected M:', sum(degSeq)//2)
+            print('    Obtained M:', len(edgelist))
+            break
+
+    if verbose:
+        print('Greedy converged after', it, 'iterations.')
+
     return sorted(edgelist, key=lambda x: (x[0], x[1]))
 
-def get_C_greedy(degSeq):
+def get_C_greedy(degSeq, maxIt=100, package='nx', verbose=False):
 
-    edgelist = clusteredGraph(degSeq)
-    g = nx.Graph()
-    g.add_edges_from(edgelist)
-    C_greedy = nx.transitivity(g)
-    return C_greedy
+    edgelist = clusteredGraph(degSeq, maxIt=maxIt, verbose=verbose)
+    if package == 'nx':
+        g = nx.Graph()
+        g.add_edges_from(edgelist)
+        C_greedy = nx.transitivity(g)
+        Cws_greedy = nx.average_clustering(g)
+    elif package == 'ig':
+        g = ig.Graph()
+        N = np.max(edgelist) + 1
+        g.add_vertices(N)
+        g.add_edges(edgelist)
+        C_greedy = g.transitivity_undirected(mode='zero')
+        Cws_greedy = g.transitivity_avglocal_undirected(mode='zero')
+
+    else:
+        print('ERROR: Package "{}" not supported'.format(package))
+    return C_greedy, Cws_greedy
 
 def get_C_unc(degSeq):
     """
@@ -107,41 +130,51 @@ def get_C_rand(edgelist, swaps=100, n_samples=100):
         return C
     return C_values
 
-def get_C_rand_CM(degSeq, samples=100):
+def get_C_rand_CM(degSeq, samples=10, package='nx', verbose=False):
     C_values = np.zeros(samples)
+    Cws_values = np.zeros(samples)
     for i in range(samples):
-        g = nx.configuration_model(degSeq, seed=i)
-        g = nx.Graph(g)
-        C = nx.transitivity(g)
+        if verbose:
+            print('rand CM, it', i)
+        if package == 'nx':
+            g = nx.configuration_model(degSeq, seed=i)
+            g = nx.Graph(g)
+            C = nx.transitivity(g)
+            Cws = nx.average_clustering(g)
+        elif package == 'ig':
+            g = ig.Graph().Degree_Sequence(degSeq, method='vl')
+            C = g.transitivity_undirected(mode='zero')
+            Cws = g.transitivity_avglocal_undirected(mode='zero')
+        else:
+            print('ERROR: Package "{}" not supported'.format(package))
         C_values[i] = C
-        #return C_values.mean(), C_values.std()
-    return C_values
+        Cws_values[i] = Cws
 
-def compute_C_values(g):
-
-    degSeq = list(dict(nx.degree(g)).values())
-    
-    C = nx.transitivity(g)
-    C_greedy = get_C_greedy(degSeq)
-    C_rand = get_C_rand_CM(degSeq).mean()
-    
-    C_norm = (C - C_rand) / (C_greedy - C_rand)
-    
-    return C, C_rand, C_greedy, C_norm
+    return C_values, Cws_values
 
 def get_C_Havel_Hakimi(degSeq):
     g = nx.havel_hakimi_graph(degSeq)
     C_HH = nx.transitivity(g)
     return C_HH
 
-def compute_C_values(g):
+def compute_C_values(g, samples=10, package='nx', greedy_max_it=100, verbose=False):
 
-    degSeq = list(dict(nx.degree(g)).values())
+    if package == 'nx':
+        degSeq = list(dict(nx.degree(g)).values())
+        C = nx.transitivity(g)
+    elif package == 'ig':
+        degSeq = g.degree()
+        C = g.transitivity_undirected(mode='zero')
+        Cws = g.transitivity_avglocal_undirected(mode='zero')
+    else:
+        print('ERROR: Package "{}" not supported'.format(package))
     
-    C = nx.transitivity(g)
-    C_greedy = get_C_greedy(degSeq)
-    C_rand = get_C_rand_CM(degSeq).mean()
+    if verbose:
+        print('Computing C_greedy')
+    C_greedy, Cws_greedy = get_C_greedy(degSeq, maxIt=greedy_max_it, package=package, verbose=verbose)
+    C_rand, Cws_rand = get_C_rand_CM(degSeq, samples, package=package, verbose=verbose)
     
-    C_norm = (C - C_rand) / (C_greedy - C_rand)
+    C_norm = (C - C_rand.mean()) / (C_greedy - C_rand.mean())
+    Cws_norm = (Cws - Cws_rand.mean()) / (Cws_greedy - Cws_rand.mean())
     
-    return C, C_rand, C_greedy, C_norm
+    return {'C': [C, C_rand.mean(), C_greedy, C_norm], 'Cws': [Cws, Cws_rand.mean(), Cws_greedy, Cws_norm]}
