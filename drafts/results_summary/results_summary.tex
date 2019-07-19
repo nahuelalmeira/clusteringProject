@@ -88,7 +88,7 @@ The method of degree-preserving edge rewiring (also known as edge swapping or ma
 
 The definitions given by equation \ref{eq:Cnorm} require the knowledge of the greatest value for the clustering coefficient that can be achieved by a graph having a specified degree sequence. In this section we will address how to compute that value.
 
-\subsubsection{Approximation of $C_{\mathrm{max}}$}
+\subsubsection{Approximation of $C_{\mathrm{max}}$} \label{sec:intro_Cmax}
 
 {\bf Havel-Hakimi algorithm:}
 
@@ -118,17 +118,42 @@ In most cases, this algorithm seems to converge to graphs very close to the most
 \label{fig:graph_332222}
 \end{figure}
 
+{\bf Monte Carlo approach}
+
+The third approach for finding the most clusterized graph with a given degree sequence is by performing a degree preserving rewiring process which attempts to increase the number of triangles at each step. This procedure is similar to the one described in \cite{Tamm2014IslandsNetworks} and consists in a standard Monte Carlo process using the Metropolis algorithm. We consider the ensemble of all networks having a specified degree sequence. Each triangle in the network is weighted with a chemical potential $\mu$. The partition function of the ensemble is 
+
+\begin{equation}
+Z(G, \mu) = \sum e^{\mu N_T},
+\end{equation}
+
+where $N_T$ is the number of triangles of the network $G$ and the sum runs over all networks having the same degree sequence. The MC algorithm consists on a set of degree-preserving rewiring steps. After each rewiring attempt is performed, if the number of triangles increases, the step is accepted. If the number of triangles decreases in a number $\Delta N_T$, it is accepted with probability $e^{-\mu \Delta N_T}$.
+
+The protocol is the following: we start with $t_0 M$ rewiring steps performed at $\mu = 0$ to randomize the network (here $M$ is the number of links). Then, the chemical potential is increased by an amount $\Delta \mu$ and $t_1 M$ steps are performed to reach equilibrium. After that, we take $n_s$ samples of the system, with a space between sample of $t_2 M$ steps, and compute the relevant quantities (for example, the clustering coeficients). When the chemical potential reaches the value $\mu_{\mathrm{max}}$, we change $\Delta \mu$ by $-\Delta \mu$ and compute the reverse process up to $\mu = 0$.
+
 
 \section{Results}
 
-\section{Normalized clustering coefficient for real-world networks}
+\subsection{$C_{\mathrm{max}}$ for real-world networks}
+
+In Figure \ref{fig:Cmax_MC_and_greedy}, we show the Monte Carlo calculations for different real-world netowrks, together with the value for the Newman clustering coefficient obtained by using the greedy algorithm described in Section \ref{sec:intro_Cmax}. As it can be seen, the MC process finds configurations with greater values than the greedy algorithm, thus the latter does not give the most clusterized graph. For some networks, the differences are significant, so the greedy algorithm cannot be safely used in general as a good approximation.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.26]{./figs/Cmax_MC_and_greedy}
+\caption{Variation in the clustering coefficient using the Monte Carlo process for incrementing the number of triangles in different real-world networks. Solid blue lines correspond to the diraction of increasing $\mu$ and dashed blue lines to decreasing values. The horizontal dotted line is the clustering coefficient for the original network and the horizontal dotted-dashed line, the value obtained using the greedy algorithm. The parameters for the Monte Carlo calculations are $\Delta \mu = 0.1$, $t_0 = 100$, $t_1 = 100$, $t_2 = 10$ and $n_s = 100$.}
+\label{fig:Cmax_MC_and_greedy}
+\end{figure}
+
+
+
+\subsection{Normalized clustering coefficient for real-world networks}
 
 The normalized clustering coefficient was computed for several real-world networks (a full list of the networks studied, together with a description of each one) is provided in Appendix \ref{app:NetworksStudied}. In Figure \ref{fig:Cnorm_vs_C} we show the normalized version of the Newman clustering coefficient.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.4]{./figs/Cnorm_vs_C}
-\caption{Normalized clustering coefficient compared with its standard version}
+\caption{Normalized clustering coefficient compared with its standard version. In this case, $C_{\mathrm{max}}$ was computed using the greedy algorithm and $C_{\mathrm{rand}}$ using the configuration model.}
 \label{fig:Cnorm_vs_C}
 \end{figure}
 
