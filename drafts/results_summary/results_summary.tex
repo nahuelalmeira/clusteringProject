@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[margin=1in]{geometry}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -29,7 +30,7 @@ where $T_i$ is the number of triangles passing through vertex $i$ and $k_i$ is i
 
 Average Watts-Strogatz clustering coefficient:
 \begin{equation}
-    \bar{C} = \dfrac{1}{N} \sum_i c_i.
+    \bar{c} = \dfrac{1}{N} \sum_i c_i.
 \end{equation}
 
 Obs: This average is taken over all the nodes in the network. Some authors use, instead, the only the nodes with degree greater than 1. It is important to be aware of that when interpreting results of other authors.
@@ -120,6 +121,17 @@ In most cases, this algorithm seems to converge to graphs very close to the most
 
 \section{Results}
 
+\section{Normalized clustering coefficient for real-world networks}
+
+The normalized clustering coefficient was computed for several real-world networks (a full list of the networks studied, together with a description of each one) is provided in Appendix \ref{app:NetworksStudied}. In Figure \ref{fig:Cnorm_vs_C} we show the normalized version of the Newman clustering coefficient.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.4]{./figs/Cnorm_vs_C}
+\caption{Normalized clustering coefficient compared with its standard version}
+\label{fig:Cnorm_vs_C}
+\end{figure}
+
 \appendix
 \section{Problems with $C_{\mathrm{unc}}$} \label{app:Cunc}
 
@@ -164,7 +176,28 @@ Then, equation \ref{eq:Cunc} gives
 
 Thus, if the hub scales with $N$ with any positive exponent, the expected clustering coefficient diverges.
 
-%\appendix
+\section{Computing $C_{\mathrm{rand}}$}
+
+In this section, we will discuss the differences betweenn using the Configuration Model and the rewiring procedure to compute $C_{\mathrm{rand}}$.
+
+In Figure \ref{fig:relaxation}, we show how the clustering coefficients vary as the network is relaxed to an uncorrelated version using the rewiring procedure. As it can be seen, in most networks a number of iterations equal to $M$ is enough to fully randomize it. 
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.26]{./figs/relaxation.pdf}
+\caption{Relaxation of different real-world networks using the rewiring procedure. After $\sim M$ rewiring steps, the network converges to its random version. Each curve correspond to an average taken over $10$ realizations, and shade regions correspond to a standard deviation from the mean.}
+\label{fig:relaxation}
+\end{figure}
+
+Whilst the rewiring procedure keeps the degree sequence fixed, the configuration model can in principle produce multiple edges, as well as self loops. Given that the clustering coefficients are defined for simple graphs, if that happens, it is necesary to simplify the graph before computing the values. Once simplified, the resulting graph will have a different degree sequence than the original, so the values of the clustering coefficients computing using this null model could potentially differ from the values obtained by the rewiring process. As it is pointed out in [CITE], the number of multiple edges and self loops for a sparse graph scales as $\sim N^{-1}$, so for big networks there should be no significant differences. In Figure \ref{fig:CrandCM_vs_CrandRewire} we show that indeed, the differences between these two values are not significant.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.35]{./figs/CrandCM_vs_CrandRewire.pdf}
+\caption{Comparison between the transitivity values obtained in the two null models proposed: configuration model and rewiring process.}
+\label{fig:CrandCM_vs_CrandRewire}
+\end{figure}
+
 \section{Analytic Results}
 
 In this Appendix we will discuss the problem of finding the maximum value of the clustering coefficient for a given degree sequence.
