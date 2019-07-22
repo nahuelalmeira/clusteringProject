@@ -16,7 +16,7 @@
 
 Local clustering coefficient \cite{Watts1998}:
 
-\begin{equation}
+\begin{equation} \label{eq:Cws}
     c_i = 
     \left\{
     	\begin{array}{ll}
@@ -53,7 +53,7 @@ $p(k)$ being the degree distribution.
 
 A different global transitivity measure $C$ was introduced by Newman in \cite{Newman2003}, and is defined as 
 
-\begin{equation}
+\begin{equation} \label{eq:C}
     C = \dfrac{2T}{\sum_i k_i (k_i-1)},
 \end{equation}
 
@@ -65,7 +65,7 @@ The two global clustering coefficients have similar definitions and, in fact, fo
 C_{\mathrm{unc}} = \dfrac{1}{N} \dfrac{\left[ \langle k^2 \rangle - \langle k \rangle  \right]^2}{\langle k \rangle^3}.
 \end{equation}
 
-Nevertheless, these coefficients do differ significantly in some cases, as can be seen in \cite{Bollobs2004, Estrada2011}.
+Nevertheless, these coefficients do differ significantly in some cases, as can be seen in \cite{Bollobs2004, Estrada2011}. Usually, Equation \ref{eq:Cws} gives larger values than Equation \ref{eq:C} (see, for example, \cite{NewmanBook}, footnote, p. 334).
 
 \subsection{Normalized clustering coefficient}
 
@@ -98,25 +98,19 @@ The advantage of this algorithm is that it always converges when the original se
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[scale=0.8]{./figs/graph_3322211.png}
-\caption{Graphs obtained from the degree sequence $S_1 = [3, 3, 2, 2, 2, 1, 1]$}
-\label{fig:graph_3322211}
+\includegraphics[scale=0.7]{./figs/graph_3322211.png}\hfill%
+\includegraphics[scale=0.7]{./figs/graph_332222.png}
+\caption{(Left) Graphs obtained from the degree sequence $S_1 = [3, 3, 2, 2, 2, 1, 1]$. (Right) Graphs obtained from the degree sequence $S_1 = [3, 3, 2, 2, 2, 2]$.}
+\label{fig:clusteredGraphExamples}
 \end{figure}
 
 {\bf Greedy algorithm:}
 
-This algorithm is similar as the Havel-Hakimi algorithm, with the difference that at each step the list is not sorted. This algorithm gives very good results for most of the real-world networks we studied (the resulting graph is more clusterized than the graph using the Havel-Hakimi algorithm). In particular, in the example in figure \ref{fig:graph_3322211}, it finds the most clusterized graph. Also, comparing with Monte Carlo simulations, it seems that this algorithm finds graphs with a clustering coefficient very close to the maximum. 
+This algorithm is similar as the Havel-Hakimi algorithm, with the difference that at each step the list is not sorted. This algorithm gives very good results for most of the real-world networks we studied (the resulting graph is more clusterized than the graph using the Havel-Hakimi algorithm). In particular, in the example in figure \ref{fig:fig:clusteredGraphExamples} (left), it finds the most clusterized graph. Also, comparing with Monte Carlo simulations, it seems that this algorithm finds graphs with a clustering coefficient very close to the maximum. 
 
-The main disadvantage of this algorithm is that it doesn't always converge. One counterexample is the degree sequence $S_2 = [3, 3, 2, 2, 2, 2]$. After adding the edges $\lbrace v_1, v_2 \rbrace, \lbrace v_1, v_3 \rbrace, \lbrace v_1, v_4 \rbrace, \lbrace v_2, v_3 \rbrace, \lbrace v_2, v_4 \rbrace, \lbrace v_5, v_6 \rbrace$, the algorithm is stuck, as there is no possible pair of nodes where to put the last edge. To overcome this flaw, we  perform the following modification. Whenever the algorithm get stuck, lets say after adding the edge $\lbrace v_i, v_j \rbrace$, we remove this edge and try to connect node $v_i$ with $v_{j+1}$. If the algorithm stuck after adding the edge $\lbrace v_i, v_N \rbrace$, we try with $\lbrace v_{i+1}, v_j \rbrace$. This way, the algorithm always converges. 
+The main disadvantage of this algorithm is that it doesn't always converge. One counterexample is the degree sequence $S_2 = [3, 3, 2, 2, 2, 2]$ (Figure \ref{fig:clusteredGraphExamples} right). After adding the edges $\lbrace v_1, v_2 \rbrace$, $\lbrace v_1, v_3 \rbrace$, $\lbrace v_1, v_4 \rbrace$, $\lbrace v_2, v_3 \rbrace$, $\lbrace v_2, v_4 \rbrace$,$ \lbrace v_5, v_6 \rbrace$, the algorithm is stuck, as there is no possible pair of nodes where to put the last edge. To overcome this flaw, we  perform the following modification. Whenever the algorithm get stuck, lets say after adding the edge $\lbrace v_i, v_j \rbrace$, we remove this edge and try to connect node $v_i$ with $v_{j+1}$. If the algorithm stuck after adding the edge $\lbrace v_i, v_N \rbrace$, we try with $\lbrace v_{i+1}, v_j \rbrace$. This way, the algorithm always converges. 
 
 In most cases, this algorithm seems to converge to graphs very close to the most clustered graph. But if we see the example $S_2$, we can show that the result of the algorithm is the graph in the right side of figure.
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[scale=0.8]{./figs/graph_332222.png}
-\caption{Graphs obtained from the degree sequence $S_1 = [3, 3, 2, 2, 2, 2]$}
-\label{fig:graph_332222}
-\end{figure}
 
 {\bf Monte Carlo approach}
 
@@ -135,7 +129,9 @@ The protocol is the following: we start with $t_0 M$ rewiring steps performed at
 
 \subsection{$C_{\mathrm{max}}$ for real-world networks}
 
-In Figure \ref{fig:Cmax_MC_and_greedy}, we show the Monte Carlo calculations for different real-world netowrks, together with the value for the Newman clustering coefficient obtained by using the greedy algorithm described in Section \ref{sec:intro_Cmax}. As it can be seen, the MC process finds configurations with greater values than the greedy algorithm, thus the latter does not give the most clusterized graph. For some networks, the differences are significant, so the greedy algorithm cannot be safely used in general as a good approximation.
+In Figure \ref{fig:Cmax_MC_and_greedy}, we show the Monte Carlo calculations for different real-world netowrks, together with the value for the Newman clustering coefficient obtained by using the greedy algorithm described in Section \ref{sec:intro_Cmax}. As it can be seen, the MC process finds configurations with greater values than the greedy algorithm, thus the latter does not give the most clusterized graph. For most networks, the differences are not significant, and the greedy algorithm be used as a good approximation. Some networks, nonetheless, exhibit an important difference between these two values.
+
+In Figure \ref{fig:Cmax_MC_vs_greedy} we show the two quantities. It can be seen that most points lay near the diagonal, but there are some outliers.
 
 \begin{figure}[ht!]
 \centering
@@ -144,7 +140,12 @@ In Figure \ref{fig:Cmax_MC_and_greedy}, we show the Monte Carlo calculations for
 \label{fig:Cmax_MC_and_greedy}
 \end{figure}
 
-
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.35]{./figs/Cmax_MC_vs_greedy}
+\caption{Differences between the maximum value of the clustering coefficient $C$ obtained by the greedy algorithm and the Monte Carlo process.}
+\label{fig:Cmax_MC_vs_greedy}
+\end{figure}
 
 \subsection{Normalized clustering coefficient for real-world networks}
 
@@ -160,9 +161,9 @@ The normalized clustering coefficient was computed for several real-world networ
 \appendix
 \section{Problems with $C_{\mathrm{unc}}$} \label{app:Cunc}
 
-Equation \ref{eq:Cunc} is valid under the condition that no degree-degree correlation exist. In graphs with an heterogeneous degree distribution, such correlations are unavoidable, and this expresion could give incorrect values. Lets consider a few examples. 
+Equation \ref{eq:Cunc} is valid under the condition that no degree-degree correlation exist. In graphs with an heterogeneous degree distribution, such correlations are unavoidable, and this expresion could give incorrect values. For details, see ref. \cite{Newman2003WhyNetworks}.
 
-Suppose we have a star graph with $N+1$ nodes. This graph has one single node with degree $N$ and $N$ nodes with degree $1$. the first and second momenta of the degree distribution are 
+Lets consider a few examples. Suppose we have a star graph with $N+1$ nodes. This graph has one single node with degree $N$ and $N$ nodes with degree $1$. the first and second momenta of the degree distribution are 
 
 \begin{align}
     \langle k \rangle &= \dfrac{1}{N+1} \sum_{i=0}^N k_i = \dfrac{1\times N + N \times 1}{N+1} = \dfrac{2N}{N+1} \nonumber \\
@@ -214,7 +215,13 @@ In Figure \ref{fig:relaxation}, we show how the clustering coefficients vary as 
 \label{fig:relaxation}
 \end{figure}
 
-Whilst the rewiring procedure keeps the degree sequence fixed, the configuration model can in principle produce multiple edges, as well as self loops. Given that the clustering coefficients are defined for simple graphs, if that happens, it is necesary to simplify the graph before computing the values. Once simplified, the resulting graph will have a different degree sequence than the original, so the values of the clustering coefficients computing using this null model could potentially differ from the values obtained by the rewiring process. As it is pointed out in [CITE], the number of multiple edges and self loops for a sparse graph scales as $\sim N^{-1}$, so for big networks there should be no significant differences. In Figure \ref{fig:CrandCM_vs_CrandRewire} we show that indeed, the differences between these two values are not significant.
+Whilst the rewiring procedure keeps the degree sequence fixed, the configuration model can in principle produce multiple edges, as well as self loops. Given that the clustering coefficients are defined for simple graphs, if that happens, it is necesary to simplify the graph before computing the values. Once simplified, the resulting graph will have a different degree sequence than the original, so the values of the clustering coefficients computing using this null model could potentially differ from the values obtained by the rewiring process. As it is pointed out in \cite{NewmanBook}, the expected number of multiple edges can be computed as
+
+\begin{equation}
+\text{Expected number of multiple edges} = \dfrac{1}{2}  \left( \dfrac{\langle k^2 \rangle - \langle k \rangle}{\langle k \rangle}\right)^2,
+\end{equation}
+
+ so as long as the two first momenta of the degree distribution remains bounded, the fraction of multiple edges vanishes as $1/N$ and the degree sequence generated by the configuration model is asymptotically the same as the original graph. In Figure \ref{fig:CrandCM_vs_CrandRewire} we show that indeed, the differences between these two values are not significant.
 
 \begin{figure}[ht!]
 \centering
@@ -328,7 +335,7 @@ $N_T(i)$ being the number of triangles that have $i$ as one of its vertices, whi
 
 Thus, equation \ref{eq:ws} can be written as
 
-\begin{equation} \label{eq:Cws}
+\begin{equation} \label{eq:CwsTheo}
     C_{\mathrm{WS}} = \dfrac{1}{N} \sum\limits_{i:k_i>1}  \dfrac{2 N_{T}(i)}{k_i (k_i-1)} =  \dfrac{1}{N} \sum\limits_{i:k_i>1} \dfrac{2 (A^3)_{ii}}{k_i (k_i-1)} 
 \end{equation}
 
