@@ -7,7 +7,7 @@
 %\usepackage[colorlinks=true, allcolors=blue]{hyperref} % for \url
 \usepackage{hyperref}
 \begin{document}
-\part{Normalized clustering coefficients}
+%\part{Normalized clustering coefficients}
 
 
 \section{Introduction}
@@ -153,9 +153,40 @@ The normalized clustering coefficient was computed for several real-world networ
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[scale=0.4]{./figs/Cnorm_vs_C}
+\includegraphics[scale=0.35]{./figs/Cnorm_vs_C}
 \caption{Normalized clustering coefficient compared with its standard version. In this case, $C_{\mathrm{max}}$ was computed using the greedy algorithm and $C_{\mathrm{rand}}$ using the configuration model.}
 \label{fig:Cnorm_vs_C}
+\end{figure}
+
+\subsection{Hystersis of the rewiring process}
+
+If we look again at Figure \ref{fig:Cmax_MC_and_greedy}, it can be seen that, for some networks, the degree-preserving rewiring process is independent of the direction direction in which the chemical potential changes. For some other cases, though, the change in clustering depends on the direction, showing a hysteresys cycle, as it has been previously reported in \cite{Foster2010CommunitiesEnsembles}. Where the hysteresis is present, the networks tend to form stable groups of triangles that once formed are difficult to destroy. It is interesting to see what characteristics of the networks allow this hysteretical behaviour.
+
+In order to study the dependence of the hysteresis cycle on different network parameters, we performed the rewiring process in random network models. In Figure \ref{fig:Cmax_MC_and_greedy_ER} we show three Erd\H{o}s-R\'enyi networks with the same mean degree and different sizes. We can see that the hysteresis cycle increases with the system size when the number of MC steps is proportional to the number of edges. In Figure \ref{fig:Cmax_MC_and_greedy_BA} we show the same process but for Barab\'asi-Albert networks. The first thing to be noted is that the maximum clustering coefficient for this networks is considerable lower than the corresponding values for ER networks. In addition, the hysteresis ciclye reduces significantly. 
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.27]{./figs/Cmax_MC_and_greedy_ER}
+\caption{Hysteresis cycle for Erd\H{o}s-R\'enyi networks, with mean degree $\langle k \rangle = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
+\label{fig:Cmax_MC_and_greedy_ER}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.27]{./figs/Cmax_MC_and_greedy_BA}
+\caption{Hysteresis cycle for Barab\'asi-Albert networks, with parameter $m = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
+\label{fig:Cmax_MC_and_greedy_BA}
+\end{figure}
+
+The main difference between ER and BA networks is that ER has an homogeneous degree distribution and BA, a long-tailed one. It is reasonable then to conjecture that the degree distribution is playing an important role in the behaviour of the clustering coefficient during the MC process. To determine if this is the case, we studied a third model, which we call Hybrid Model (HM), which allows us to continuously vary the degree distribution from an ER to a scale-free network. The model, which is described in detail in\cite{Gomez-Gardenes2006FromNetworks}, is a growing model that combines both preferential and random attachment. The most relevant parameter, $\alpha$, ranges from $0$ to $1$. For $\alpha = 0$, all nodes are connected by preferential attachment, in a similar (but slightly different) way as in BA networks, thus constructing a scale-free network. For $\alpha = 1$, links are connected randomly and the model is equivalent to ER. 
+
+In Figure \ref{fig:Cmax_MC_and_greedy_HM} we show the hysteresis cycle for the HM with differen sizes and values of $\alpha$.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.27]{./figs/Cmax_MC_and_greedy_HM}
+\caption{Hysteresis cycle for Barab\'asi-Albert networks, with parameter $m = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
+\label{fig:Cmax_MC_and_greedy_HM}
 \end{figure}
 
 \appendix
@@ -210,7 +241,7 @@ In Figure \ref{fig:relaxation}, we show how the clustering coefficients vary as 
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[scale=0.26]{./figs/relaxation.pdf}
+\includegraphics[scale=0.24]{./figs/relaxation.pdf}
 \caption{Relaxation of different real-world networks using the rewiring procedure. After $\sim M$ rewiring steps, the network converges to its random version. Each curve correspond to an average taken over $10$ realizations, and shade regions correspond to a standard deviation from the mean.}
 \label{fig:relaxation}
 \end{figure}
