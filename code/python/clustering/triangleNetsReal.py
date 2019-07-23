@@ -7,6 +7,7 @@ import pathlib
 import igraph as ig
 from triangleNet_methods import triangleGraph
 
+## Auxiliar methods
 def protocolName(mode, init_mu, step, samples, transit, decorr, rampe):
     
     protocol = '{}_{}_muInit{:.6f}_step{:.6f}_samples{:06}_transit{:06d}_decorr{:06d}'.format(mode, rampe, init_mu, step, samples, transit, decorr)
@@ -15,20 +16,15 @@ def protocolName(mode, init_mu, step, samples, transit, decorr, rampe):
 get_mu = lambda name: float(name.split('mu')[1].split('_')[0])
 get_sample = lambda name: int(name.split('sample')[1].split('.')[0])
 
-net_dir = '../../../networks/real'
-networks = ['ca-netscience', 
-            'ca-GrQc',
-            'bio-yeast',
-            'bio-diseasome',
-            'bio-celegans',
-            'powergrid',
-            'euroroad_simple_gcc',
-            'CElegansNeural',
-            #'polblogs_simple_gcc',
-            #'EColiPIN_simple_gcc',
-            #'US-airports-500'
-            ]
 
+## Netwoks to compute 
+net_dir = '../../../networks/real'
+networks = os.listdir(net_dir)
+for network in networks:
+    if '_simple_gcc' in network:
+        networks.remove(network[:-11])
+
+## Protocol description
 mode = 'maxC'
 min_mu = 0
 max_mu = 10
