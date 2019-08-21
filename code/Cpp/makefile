@@ -1,17 +1,32 @@
-SRC_PATH=./source
-HEADER_PATH=./headers
-OUT_PATH=../bin
-CC=g++
-CFLAGS=-Wall -o2
-FILES=annealing.cpp basicFunctions.cpp graphFunctions.cpp ran2.cpp
-SOURCES=$(FILES:%.cpp=$(SRC_PATH)/%.cpp)
+HEADER_PATH = ./headers
+CC          = g++
+CFLAGS      = --std=c++11 -Wall -I$(HEADER_PATH) -c
+vpath %.cpp source
+vpath %.hpp headers
 
-all :
-	mkdir -p ${OUT_PATH}
-	${CC} --std=c++11 ${CFLAGS} -I${HEADER_PATH} ${SOURCES} -o annealing 
+all: annealing relaxation
 
-FILES=relaxation.cpp basicFunctions.cpp graphFunctions.cpp ran2.cpp
-SOURCES=$(FILES:%.cpp=$(SRC_PATH)/%.cpp)
+annealing: annealing.o basicFunctions.o graphFunctions.o ran2.o
+	$(CC) $< basicFunctions.o graphFunctions.o ran2.o -o $@
 
-all :
-	${CC} --std=c++11 ${CFLAGS} -I${HEADER_PATH} ${SOURCES} -o relaxation
+relaxation: relaxation.o basicFunctions.o graphFunctions.o ran2.o
+	$(CC) $< basicFunctions.o graphFunctions.o ran2.o -o $@
+
+annealing.o: annealing.cpp 
+	$(CC) $(CFLAGS) $<
+
+relaxation.o: relaxation.cpp 
+	$(CC) $(CFLAGS) $<
+
+basicFunctions.o: basicFunctions.cpp basicFunctions.hpp
+	$(CC) $(CFLAGS) $<
+
+graphFunctions.o: graphFunctions.cpp graphFunctions.hpp
+	$(CC) $(CFLAGS) $<
+
+ran2.o: ran2.cpp ran2.hpp
+	$(CC) $(CFLAGS) $<
+	
+
+clean:
+	rm *.o annealing relaxation
