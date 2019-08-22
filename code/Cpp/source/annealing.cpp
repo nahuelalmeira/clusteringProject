@@ -53,6 +53,7 @@ string RAMPE = "annealing";
 int N_SAMPLES = 100;
 int DECORR_TIME = 100;
 int TRANSIT_TIME = 1000;
+double TIME_SCALING = 1;
 
 
 /* Parse command line arguments */
@@ -92,6 +93,8 @@ void parseArguments(int argc, char *argv[]) {
             TRANSIT_TIME = atoi(argv[i+1]);
         if( !strcmp(argv[i], "--samples") )
             N_SAMPLES = atoi(argv[i+1]);
+        if( !strcmp(argv[i], "--timeScaling") )
+            TIME_SCALING = atof(argv[i+1]);
     }
     if(INPUT_FILE == "") INPUT_FILE = NETWORK + ".txt";
     //if( !RAMPE.compare("cooling") )
@@ -102,19 +105,21 @@ void parseArguments(int argc, char *argv[]) {
 
 /* Print arguments */
 void printArguments(ostream& out) {
-    out << "\n---- Arguments ----" << endl;
-    out << "Network     = " << NETWORK << endl;
-    out << "Input file  = " << INPUT_FILE << endl;
-    out << "mode        = " << MODE << endl;
-    out << "randMCS     = " << RAND_MCS << endl;
-    out << "seed        = " << seed << " + " << str_seed << endl;
-    out << "initialMu   = " << INITIAL_MU << endl;
-    out << "finalMu     = " << FINAL_MU << endl;
-    out << "deltaMu     = " << DELTA_MU << endl;
-    out << "cycle       = " << CYCLE << endl;
-    out << "samples     = " << N_SAMPLES << endl;
-    out << "transitTime = " << TRANSIT_TIME << endl;
-    out << "decorrTime  = " << DECORR_TIME << endl; 
+    out << "\n----- Arguments ------" << endl;
+    out << "Network      = " << NETWORK << endl;
+    out << "Input file   = " << INPUT_FILE << endl;
+    out << "mode         = " << MODE << endl;
+    out << "randMCS      = " << RAND_MCS << endl;
+    out << "seed         = " << seed << " + " << str_seed << endl;
+    out << "initialMu    = " << INITIAL_MU << endl;
+    out << "finalMu      = " << FINAL_MU << endl;
+    out << "deltaMu      = " << DELTA_MU << endl;
+    out << "cycle        = " << CYCLE << endl;
+    out << "samples      = " << N_SAMPLES << endl;
+    out << "transitTime  = " << TRANSIT_TIME << endl;
+    out << "decorrTime   = " << DECORR_TIME << endl;
+    out << "timeScaling  = " << TIME_SCALING << endl;
+    out << "----- end Arguments ----" << endl; 
     out << endl;
 }
 
@@ -126,7 +131,8 @@ void writeData(const Graph G, double mu, int sample, int steps, ostream& out) {
         << steps  << endl;
 }
 
-string protocolName(string mode, string rampe, double mu_init, double step, int samples, int transit, int decorr) {
+string protocolName(string mode, bool connected, string rampe, double mu_init, 
+                    double step, int samples, int transit, int decorr, double time_scaling) {
     string protocol;
 
     string str_decorr;
@@ -134,25 +140,30 @@ string protocolName(string mode, string rampe, double mu_init, double step, int 
     string str_samples;
     string str_step;  
     string str_mu_init;
+    string str_time_scaling;
 
     str_transit = string(6 - to_string(transit).length(), '0') + to_string(transit);
     str_decorr  = string(6 - to_string(decorr).length(), '0')  + to_string(decorr);
     str_samples = string(6 - to_string(samples).length(), '0') + to_string(samples);
     str_mu_init = to_string(mu_init);
     str_step = to_string(fabs(step));
+    str_time_scaling = to_string(time_scaling);
 
+    if(connected) mode += "_connected";
     protocol = mode + "_" + rampe + "_muInit" + str_mu_init + "_step" + str_step 
-             + "_samples" + str_samples + "_transit" + str_transit + "_decorr" + str_decorr;
+             + "_samples" + str_samples + "_transit" + str_transit + "_decorr" + str_decorr
+             + "_timeScaling" + str_time_scaling;
 
     return protocol;
 }
 
-string buildOutputDir(string mode, string rampe, double mu_init, double step, int samples, int transit, int decorr) {
+string buildOutputDir(string mode, bool connected, string rampe, double mu_init, double step, 
+                      int samples, int transit, int decorr, double time_scaling) {
     string output_dir;
-    string protocol = protocolName(mode, rampe, mu_init, step, samples, transit, decorr);
+    string protocol = protocolName(mode, connected, rampe, mu_init, step, samples, transit, decorr, time_scaling);
 
     output_dir = INPUT_DIR + "/" + NETWORK;
-    if(CONNECTED) output_dir += "/connected";
+    //if(connected) output_dir += "/connected";
     output_dir += "/" + protocol + "/seed" + string(5 - str_seed.length(), '0') + str_seed; 
     return output_dir;
 }
@@ -211,11 +222,13 @@ int main(int argc, char *argv[]) {
     int steps;
     bool write = false;
     double mu = INITIAL_MU;
+    int max_valid_swaps = int(pow(double(G.M)/100, TIME_SCALING));
 
     string str_sample;
     string str_steps;
 
-    string output_dir = buildOutputDir(MODE, RAMPE, INITIAL_MU, DELTA_MU, N_SAMPLES, TRANSIT_TIME, DECORR_TIME);
+    string output_dir = buildOutputDir(MODE, CONNECTED, RAMPE, INITIAL_MU, DELTA_MU, 
+                                       N_SAMPLES, TRANSIT_TIME, DECORR_TIME, TIME_SCALING);
     createDir(output_dir);
 
     while(true) {
@@ -243,7 +256,7 @@ int main(int argc, char *argv[]) {
             G.Cws = Cws;
 
             // Write data to edgelist and print to standard output
-            if(valid_swaps == G.M) {
+            if(valid_swaps == max_valid_swaps) {
                 valid_swaps = 0;
                 steps++;
                 write = true;
@@ -271,7 +284,8 @@ int main(int argc, char *argv[]) {
                 CYCLE = false;
                 if      (RAMPE == "annealing") RAMPE = "cooling";
                 else if (RAMPE == "cooling")   RAMPE = "annealing";
-                output_dir = buildOutputDir(MODE, RAMPE, INITIAL_MU, DELTA_MU, N_SAMPLES, TRANSIT_TIME, DECORR_TIME);
+                output_dir = buildOutputDir(MODE, CONNECTED, RAMPE, INITIAL_MU, DELTA_MU, 
+                                            N_SAMPLES, TRANSIT_TIME, DECORR_TIME, TIME_SCALING);
                 createDir(output_dir);
             }
         }

@@ -98,7 +98,8 @@ string protocolName() {
     string str_randMCS = to_string(RAND_MCS);
     string str_samples = to_string(SAMPLES);
     string protocol;
-    protocol = "relaxation_randMCS" + str_randMCS + "_samples" + str_samples;
+    if (CONNECTED) protocol = "relaxation_connected_randMCS" + str_randMCS + "_samples" + str_samples;
+    else           protocol = "relaxation_randMCS" + str_randMCS + "_samples" + str_samples;
     return protocol;
 }
 
@@ -107,7 +108,7 @@ string buildOutputDir() {
     string protocol = protocolName();
 
     output_dir = INPUT_DIR + "/" + NETWORK;
-    if(CONNECTED) output_dir += "/connected";
+    //if(CONNECTED) output_dir += "/connected";
     output_dir += "/" + protocol + "/seed" + string(5 - str_seed.length(), '0') + str_seed; 
     return output_dir;
 }
