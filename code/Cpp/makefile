@@ -7,10 +7,10 @@ vpath %.hpp headers
 all: annealing relaxation
 
 annealing: annealing.o basicFunctions.o graphFunctions.o ran2.o
-	$(CC) $< basicFunctions.o graphFunctions.o ran2.o -o $@
+	$(CC) $^ -o $@
 
 relaxation: relaxation.o basicFunctions.o graphFunctions.o ran2.o
-	$(CC) $< basicFunctions.o graphFunctions.o ran2.o -o $@
+	$(CC) $^ -o $@
 
 annealing.o: annealing.cpp 
 	$(CC) $(CFLAGS) $<
@@ -26,7 +26,7 @@ graphFunctions.o: graphFunctions.cpp graphFunctions.hpp
 
 ran2.o: ran2.cpp ran2.hpp
 	$(CC) $(CFLAGS) $<
-	
+
 
 clean:
 	rm *.o annealing relaxation
