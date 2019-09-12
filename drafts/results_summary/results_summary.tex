@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=1.1in]{geometry}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -122,7 +122,7 @@ Z(G, \mu) = \sum e^{\mu N_T},
 
 where $N_T$ is the number of triangles of the network $G$ and the sum runs over all networks having the same degree sequence. The MC algorithm consists on a set of degree-preserving rewiring steps. After each rewiring attempt is performed, if the number of triangles increases, the step is accepted. If the number of triangles decreases in a number $\Delta N_T$, it is accepted with probability $e^{-\mu \Delta N_T}$.
 
-The protocol is the following: we start with $t_0 M$ rewiring steps performed at $\mu = 0$ to randomize the network (here $M$ is the number of links). Then, the chemical potential is increased by an amount $\Delta \mu$ and $t_1 M$ steps are performed to reach equilibrium. After that, we take $n_s$ samples of the system, with a space between sample of $t_2 M$ steps, and compute the relevant quantities (for example, the clustering coeficients). When the chemical potential reaches the value $\mu_{\mathrm{max}}$, we change $\Delta \mu$ by $-\Delta \mu$ and compute the reverse process up to $\mu = 0$.
+The protocol is the following: we start with $t_0 M$ rewiring steps performed at $\mu = 0$ to randomize the network (here $M$ is the number of links). Then, the chemical potential is increased by an amount $\Delta \mu$ and $t_1 M^{\alpha}$ steps are performed to reach equilibrium. After that, we take $n_s$ samples of the system, with a space between sample of $t_2 M^{\alpha}$ steps, and compute the relevant quantities (for example, the clustering coeficients). When the chemical potential reaches the value $\mu_{\mathrm{max}}$, we change $\Delta \mu$ by $-\Delta \mu$ and compute the reverse process up to $\mu = 0$.
 
 
 \section{Results}
@@ -135,8 +135,8 @@ In Figure \ref{fig:Cmax_MC_vs_greedy} we show the two quantities. It can be seen
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[scale=0.26]{./figs/Cmax_MC_and_greedy}
-\caption{Variation in the clustering coefficient using the Monte Carlo process for incrementing the number of triangles in different real-world networks. Solid blue lines correspond to the diraction of increasing $\mu$ and dashed blue lines to decreasing values. The horizontal dotted line is the clustering coefficient for the original network and the horizontal dotted-dashed line, the value obtained using the greedy algorithm. The parameters for the Monte Carlo calculations are $\Delta \mu = 0.1$, $t_0 = 100$, $t_1 = 100$, $t_2 = 10$ and $n_s = 100$.}
+\includegraphics[scale=0.26]{{./figs/Cmax_MC_and_greedy_timeScaling2.50}.pdf}
+\caption{Variation in the clustering coefficient using the Monte Carlo process for incrementing the number of triangles in different real-world networks. Solid blue lines correspond to the diraction of increasing $\mu$ and dashed blue lines to decreasing values. The horizontal dotted line is the clustering coefficient for the original network and the horizontal dotted-dashed line, the value obtained using the greedy algorithm. The parameters for the Monte Carlo calculations are $\Delta \mu = 0.1$, $\alpha=2.5$, $t_0 = 100$, $t_1 = 100$, $t_2 = 10$ and $n_s = 100$.}
 \label{fig:Cmax_MC_and_greedy}
 \end{figure}
 
@@ -167,14 +167,14 @@ In order to study the dependence of the hysteresis cycle on different network pa
 \begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.27]{./figs/Cmax_MC_and_greedy_ER}
-\caption{Hysteresis cycle for Erd\H{o}s-R\'enyi networks, with mean degree $\langle k \rangle = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
+\caption{Hysteresis cycle for Erd\H{o}s-R\'enyi networks, with mean degree $\langle k \rangle = 5$ and different sizes. The parameters of the Monte Carlo calculations are $\Delta \mu = 0.1$, $\alpha=2$, $t_0 = 100$, $t_1 = 100$, $t_2 = 10$ and $n_s = 100$.}
 \label{fig:Cmax_MC_and_greedy_ER}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.27]{./figs/Cmax_MC_and_greedy_BA}
-\caption{Hysteresis cycle for Barab\'asi-Albert networks, with parameter $m = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
+\caption{Hysteresis cycle for Barab\'asi-Albert networks, with parameter $m = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy_ER}.}
 \label{fig:Cmax_MC_and_greedy_BA}
 \end{figure}
 
@@ -185,7 +185,7 @@ In Figure \ref{fig:Cmax_MC_and_greedy_HM} we show the hysteresis cycle for the H
 \begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.27]{./figs/Cmax_MC_and_greedy_HM}
-\caption{Hysteresis cycle for Barab\'asi-Albert networks, with parameter $m = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
+\caption{Hysteresis cycle for the hybrid model, with parameter $m = 5$ and different sizes. The parameters of the Monte Carlo calculations are the same as in Figure \ref{fig:Cmax_MC_and_greedy}.}
 \label{fig:Cmax_MC_and_greedy_HM}
 \end{figure}
 
@@ -318,7 +318,7 @@ Then, the total number of paths of length two is simple
 
 \begin{equation} \label{eq:P2}
     %|P_2| = \sum_i |P_2|(i) = \sum_i \sum_{l\neq j} a_{il} a_{lj} = \sum_{ilj} a_{il} a_{lj} - k_i = \sum_l k_i^2 - 2M
-    |P_2| = \sum_i |P_2|(i) = \sum_i \left( \sum_{l} a_{il} k_l - k_i \right) = \sum_l k_l^2 - 2M.
+    |P_2| = \sum_i |P_2|(i) = \sum_i \left( \sum_{l} a_{il} k_l - k_i \right) = \sum_l k_l^2 - 2M = N\left[\langle k^2 \rangle - \langle k \rangle\right].
 \end{equation}
 
 On the other side, the number of triangles in the graph is given by
@@ -376,26 +376,26 @@ Thus, equation \ref{eq:ws} can be written as
 In order to get $C_{\mathrm{max}}$, we need to maximize the number of triangles in the network (the number of triads is fixed by the degree sequence, see Eq. \ref{eq:P2}). According to Eq. \ref{eq:T}, the number of triangles is determined by the trace of the adjacency matrix A. Considering the degree sequence as constrains, together with the conditions imposed in considering the graph as simple and undirected, the function we have to maximize is
 
 \begin{equation}
-    f(\lbrace a_{ij} \rbrace) = Tr(A^3) + \sum_i \theta_i \left(d_i - \sum_j a_{ij} \right) - \sum_i \omega_i a_{ii} + \sum_{i\neq j} \beta_{ij} (a_{ij}-a_{ji}) + \gamma \left(2M - \sum_{ij} a_{ij} \right).
+    f(\lbrace a_{ij} \rbrace) = Tr(A^3) + \sum_i \theta_i \left(d_i - \sum_j a_{ij} \right) - \sum_i \omega_i a_{ii} + \sum_{i\neq j} \beta_{ij} (a_{ij}-a_{ji}).
 \end{equation}
 
 Differentiating with respect to $a_{ij}$ and equaling to 0,
 
 \begin{equation}
-    \dfrac{\partial f(\lbrace a_{pq} \rbrace)}{\partial a_{pq}} = 3 (A^2)_{pq} - \theta_p - \omega_p \delta_{pq} + (\beta_{pq} - \beta_{qp}) (1-\delta_{pq}) - \gamma = 0,
+    \dfrac{\partial f(\lbrace a_{pq} \rbrace)}{\partial a_{pq}} = 3 (A^2)_{pq} - \theta_p - \omega_p \delta_{pq} + (\beta_{pq} - \beta_{qp}) (1-\delta_{pq}) = 0,
 \end{equation}
 
 where $\delta_{pq}$ is the Kronecker delta. For $p=q$, we obtain
 
 \begin{align}
-    3 (A^2)_{pp} &= \theta_p + \omega_p + \gamma \\
-    3 d_p &=  \theta_p + \omega_p + \gamma.
+    3 (A^2)_{pp} &= \theta_p + \omega_p \\
+    3 d_p &=  \theta_p + \omega_p.
 \end{align}
 
 Summing over $p$,
 
 \begin{equation} \label{eq:diagonal}
-    6 M = \Theta + \Omega + N \gamma,
+    6 M = \Theta + \Omega,
 \end{equation}
 
 where we defined $\Theta = \sum_p \theta_p$ and $\Omega = \sum_p \omega_p$.
@@ -404,19 +404,19 @@ where we defined $\Theta = \sum_p \theta_p$ and $\Omega = \sum_p \omega_p$.
 On the other side, for $p\neq q$, we have
 
 \begin{equation} \label{eq:p_neq_q}
-    3 (A^2)_{pq} = \theta_p + (\beta_{qp} - \beta_{pq}) + \gamma.
+    3 (A^2)_{pq} = \theta_p + (\beta_{qp} - \beta_{pq}).
 \end{equation}
 
 Analogously, differentiating with respect to $a_{qp}$, $q \neq p$, we have
 
 \begin{equation}\label{eq:q_neq_p}
-    3 (A^2)_{qp} = \theta_q - (\beta_{qp} - \beta_{pq}) + \gamma.
+    3 (A^2)_{qp} = \theta_q - (\beta_{qp} - \beta_{pq}).
 \end{equation}
 
 Taking into account that $A^2$ is symmetric and adding Eq. \ref{eq:q_neq_p} to Eq. \ref{eq:p_neq_q}, 
 
 \begin{equation} \label{eq:A2pnotq}
-    6 (A^2)_{pq} = \theta_p + \theta_q + 2 \gamma.
+    6 (A^2)_{pq} = \theta_p + \theta_q.
 \end{equation} 
 
 
@@ -424,19 +424,19 @@ Taking into account that $A^2$ is symmetric and adding Eq. \ref{eq:q_neq_p} to E
 Summing \ref{eq:A2pnotq} over $p\neq q$,
 
 \begin{align}
-    \sum_{p\neq q}6 (A^2)_{pq} &=\sum_{p\neq q} (\theta_p + \theta_q) +2 N(N-1) \gamma \nonumber \\
-    6 |P_2| &= 2(N-1) \Theta + 2N(N-1) \gamma \nonumber \\
-    \dfrac{3 |P_2|}{N-1} &= \Theta + N \gamma. \label{eq:sum_mu}
+    \sum_{p\neq q}6 (A^2)_{pq} &=\sum_{p\neq q} (\theta_p + \theta_q) \nonumber \\
+    6 |P_2| &= 2(N-1) \Theta \nonumber \\
+    \dfrac{3 |P_2|}{N-1} &= \Theta. \label{eq:sum_mu}
 \end{align}
 
 Summing \ref{eq:A2pnotq} over $q:q\neq p$,
 
 \begin{align}
-    \sum_{q:q\neq p} (A^2)_{pq} &= (N-1) \theta_p + \sum_{q:q\neq p} \theta_q + 2(N-1)\gamma \nonumber\\ 
-    |P_2(p)| &= (N-1) \theta_p + \Theta - \theta_p + 2(N-1)\gamma \nonumber\\ 
-    |P_2(p)| &= (N-2) \theta_p + \Theta + 2(N-1)\gamma \nonumber \\
-    |P_2(p)| &= (N-2) \theta_p + (N-2)\gamma + \dfrac{3 |P_2|}{N-1} \nonumber \\
-    |P_2(p)| &= (N-2) (\theta_p + \gamma) + \dfrac{3 |P_2|}{N-1}
+    \sum_{q:q\neq p} (A^2)_{pq} &= (N-1) \theta_p + \sum_{q:q\neq p} \theta_q \nonumber\\ 
+    |P_2(p)| &= (N-1) \theta_p + \Theta - \theta_p \nonumber\\ 
+    |P_2(p)| &= (N-2) \theta_p + \Theta \nonumber \\
+    |P_2(p)| &= (N-2) \theta_p + \dfrac{3 |P_2|}{N-1} \nonumber \\
+    |P_2(p)| &= (N-2) \theta_p + \dfrac{3 |P_2|}{N-1}
 \end{align}
 
 From \ref{eq:diagonal} and \ref{eq:sum_mu}, we have 
@@ -480,17 +480,10 @@ Based on the previous results, we have that
 
 \begin{align}
     6 Tr(A^3) &= 6 \sum_{ij} a_{ij} (A^2)_{ij} \nonumber \\
-    6 Tr(A^3) &= \sum_{ij} a_{ij}(\theta_i + \theta_j + 2\gamma) \nonumber \\
-    6 Tr(A^3) &= 2\sum_{ij} a_{ij}(\theta_i + \gamma) \nonumber \\
-    3 Tr(A^3) &=  \sum_{i j} a_{ij}\theta_i + 2M\gamma \nonumber \\
-    3 Tr(A^3) &=  \sum_{i} d_i\theta_i + 2M\gamma \nonumber \\
-    %3 Tr(A^3) &= \sum_{i} d_i(3d_i-\omega_i-\gamma) + 2M\gamma \nonumber \\ 
-    %3 Tr(A^3) &= 3\sum_{i} d_i^2-\sum_{i}d_i\omega_i-\gamma\sum_{i}d_i + 2M\gamma \nonumber \\ 
-    %3 Tr(A^3) &= 3N\langle k^2\rangle-\sum_{i}d_i\omega_i
-    %
-    3 Tr(A^3) &= \sum_{i} d_i\theta_i + 2 M \left[\dfrac{3 |P_2|}{N(N-1)} - \dfrac{1}{N} \Theta\right] \nonumber \\
-    3 Tr(A^3) &= \dfrac{2 M}{N} \dfrac{3 |P_2|}{N-1} + \sum_{i} \left(d_i\theta_i  - \dfrac{2M}{N}  \theta_i\right) \nonumber \\
-    3 Tr(A^3) &= \langle k \rangle \dfrac{3 |P_2|}{N-1} + \sum_{i} \left(d_i -\langle k \rangle\right) \theta_i
+    6 Tr(A^3) &= \sum_{ij} a_{ij}(\theta_i + \theta_j) \nonumber \\
+    6 Tr(A^3) &= 2\sum_{ij} a_{ij}(\theta_i) \nonumber \\
+    3 Tr(A^3) &=  \sum_{i j} a_{ij}\theta_i \nonumber \\
+    3 Tr(A^3) &=  \sum_{i} d_i\theta_i \nonumber 
 \end{align}
 
 
@@ -498,13 +491,13 @@ Based on the previous results, we have that
 Now let's do the same but trying to maximize $\bar{c}$. The function with the constrains is 
 
 \begin{equation}
-    g(\lbrace a_{ij} \rbrace) = \sum_{i} \dfrac{2 (A^2)_{ii}}{d_i (d_i-1)} + \sum_i \mu_i \left(d_i - \sum_j a_{ij} \right) + \sum_i \omega_i a_{ii} + \sum_{i\neq j} \beta_{ij} (a_{ij}-a_{ji}) + \gamma \left(2M - \sum_{ij} a_{ij} \right).
+    g(\lbrace a_{ij} \rbrace) = \sum_{i} \dfrac{2 (A^2)_{ii}}{d_i (d_i-1)} + \sum_i \mu_i \left(d_i - \sum_j a_{ij} \right) + \sum_i \omega_i a_{ii} + \sum_{i\neq j} \beta_{ij} (a_{ij}-a_{ji}).
 \end{equation}
 
 Differentiating with respect to $a_{pq}$,
 
 \begin{equation}
-    \dfrac{\partial g(\lbrace a_{pq} \rbrace)}{\partial a_{pq}} = \dfrac{2 a_{qp} }{d_p (d_p - 1)} + \dfrac{2 a_{pq}}{d_q (d_q - 1)} - \mu_p + \omega_p \delta_{pq} + (\beta_{pq} - \beta_{qp}) (1-\delta_{pq}) - \gamma = 0.
+    \dfrac{\partial g(\lbrace a_{pq} \rbrace)}{\partial a_{pq}} = \dfrac{2 a_{qp} }{d_p (d_p - 1)} + \dfrac{2 a_{pq}}{d_q (d_q - 1)} - \mu_p + \omega_p \delta_{pq} + (\beta_{pq} - \beta_{qp}) (1-\delta_{pq}) = 0.
 \end{equation}
 
 For $p=q$,
@@ -516,13 +509,13 @@ For $p=q$,
 For $p\neq q$,
 
 \begin{equation}
-    2 a_{pq}\left[\dfrac{1}{d_p (d_p - 1)} + \dfrac{1}{d_q (d_q - 1)} \right]- \mu_p + (\beta_{pq} - \beta_{qp}) - \gamma = 0.
+    2 a_{pq}\left[\dfrac{1}{d_p (d_p - 1)} + \dfrac{1}{d_q (d_q - 1)} \right]- \mu_p + (\beta_{pq} - \beta_{qp}) = 0.
 \end{equation}
 
 Differentiating with respect to $a_{qp},\: q\neq p$,
 
 \begin{equation}
-    2 a_{pq}\left[\dfrac{1}{d_p (d_p - 1)} + \dfrac{1}{d_q (d_q - 1)} \right]- \mu_q - (\beta_{pq} - \beta_{qp}) - \gamma = 0.
+    2 a_{pq}\left[\dfrac{1}{d_p (d_p - 1)} + \dfrac{1}{d_q (d_q - 1)} \right]- \mu_q - (\beta_{pq} - \beta_{qp}) = 0.
 \end{equation}
 
 Substracting:
