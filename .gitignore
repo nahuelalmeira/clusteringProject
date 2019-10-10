@@ -14,8 +14,8 @@
 .vscode
 
 # Networks subdirectories
-./networks/real/*/*
-./networks/model/*
+./networks
+./networks
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
