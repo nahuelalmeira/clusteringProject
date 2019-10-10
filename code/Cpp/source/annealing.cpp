@@ -225,8 +225,6 @@ int main(int argc, char *argv[]) {
     int max_valid_swaps = int(pow(double(G.M)/100, TIME_SCALING));
 
     string str_sample;
-    string str_steps;
-
     string output_dir = buildOutputDir(MODE, CONNECTED, RAMPE, INITIAL_MU, DELTA_MU, 
                                        N_SAMPLES, TRANSIT_TIME, DECORR_TIME, TIME_SCALING);
     createDir(output_dir);
@@ -264,7 +262,6 @@ int main(int argc, char *argv[]) {
             if(steps >= TRANSIT_TIME) {
                 if(steps%DECORR_TIME==0 && write)  {
                     str_sample = string(4 - to_string(sample).length(), '0') + to_string(sample);
-                    str_steps = string(6 - to_string(steps).length(), '0') + to_string(steps);
                     edgelist_file_name = output_dir + "/" + 
                                          RAMPE + "_mu" + to_string(mu) + "_sample" + str_sample + ".txt";
                     G.writeEdgeList(edgelist_file_name);
